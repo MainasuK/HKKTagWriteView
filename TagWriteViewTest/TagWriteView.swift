@@ -74,7 +74,7 @@ public class TagWriteView : UIView
         }
     }
     
-    public var delegate: TagWriteViewDelegate?
+    public weak var delegate: TagWriteViewDelegate?
     
     
     // MARK: Private Properties
