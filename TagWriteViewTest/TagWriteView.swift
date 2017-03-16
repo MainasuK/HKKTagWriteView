@@ -40,21 +40,6 @@ public class TagWriteView : UIView
         }
     }
     
-    public var sizeForDeleteButton = CGRect(x: 0, y: 0, width: 17, height: 17) {
-        didSet {
-            deleteButton.frame = sizeForDeleteButton
-        }
-    }
-    
-    public var backgroundColorForDeleteButton = UIColor.white {
-        didSet {
-            if deleteButton != nil {
-                deleteButton.backgroundColor = backgroundColorForDeleteButton
-            }
-        }
-    }
-    
-    
     public var tags: [String] {
         return tagsMade
     }
@@ -76,13 +61,12 @@ public class TagWriteView : UIView
     
     public weak var delegate: TagWriteViewDelegate?
     
+    public var scrollView: UIScrollView!
+    public var inputBaseView: UIView!
+    public var tagInputView: UITextView!
+    public var deleteButton: UIButton!
     
     // MARK: Private Properties
-    fileprivate var scrollView: UIScrollView!
-    fileprivate var inputBaseView: UIView!
-    fileprivate var tagInputView: UITextView!
-    fileprivate var deleteButton: UIButton!
-    
     fileprivate var tagViews = [UIButton]()
     fileprivate var tagsMade = [String]()
     
@@ -164,7 +148,6 @@ public class TagWriteView : UIView
         let newTag = tag.trimmingCharacters(in: .whitespaces)
         for t in tagsMade {
             if newTag == t {
-                NSLog("DUPLICATED!")
                 return
             }
         }
@@ -181,7 +164,6 @@ public class TagWriteView : UIView
         var foundIndex = -1
         for (idx, value) in tagsMade.enumerated() {
             if tag == value {
-                print("FOUND!")
                 foundIndex = idx
             }
         }
@@ -238,8 +220,9 @@ public class TagWriteView : UIView
     private func initControls() {
         scrollView = UIScrollView(frame: self.bounds)
         scrollView.backgroundColor = UIColor.clear
-        scrollView.scrollsToTop = false;
-        scrollView.showsVerticalScrollIndicator = false;
+        scrollView.scrollsToTop = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
         scrollView.autoresizingMask = [UIViewAutoresizing.flexibleWidth, UIViewAutoresizing.flexibleHeight]
         addSubview(scrollView)
         scrollView.applyMarginConstraint(margin: UIEdgeInsets.zero)
@@ -256,8 +239,8 @@ public class TagWriteView : UIView
         tagInputView.autoresizingMask = UIViewAutoresizing.flexibleWidth
         inputBaseView.addSubview(tagInputView)
         
-        deleteButton = UIButton(frame: sizeForDeleteButton)
-        deleteButton.backgroundColor = backgroundColorForDeleteButton
+        deleteButton = UIButton(frame: CGRect(x: 0, y: 0, width: 17, height: 17))
+        deleteButton.backgroundColor = .white
         deleteButton.addTarget(self, action: #selector(self.deleteButtonDidPush(sender:)), for: .touchUpInside)
         deleteButton.isHidden = true;
     }
@@ -380,7 +363,7 @@ public class TagWriteView : UIView
         setScrollOffsetToMakeInputViewVisible()
     }
     
-    fileprivate func removeTagView(at index: Int, animated: Bool, completion: ((_ finished: Bool) -> Void)) {
+    fileprivate func removeTagView(at index: Int, animated: Bool, completion: @escaping ((_ finished: Bool) -> Void)) {
         if index >= tagViews.count {
             return
         }
